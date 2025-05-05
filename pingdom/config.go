@@ -5,16 +5,20 @@ import (
 	"log"
 	"os"
 
-	"github.com/mbarper/go-pingdom/pingdom"
-	"github.com/mbarper/go-pingdom/pingdomext"
+	// "github.com/mbarper/go-pingdom/pingdom"
+	// "github.com/mbarper/go-pingdom/pingdomext"
+
+	"github.com/Samuel-Ijegbulem/go-pingdom/pingdom"
+	"github.com/Samuel-Ijegbulem/go-pingdom/pingdomext"
 )
 
 // Config respresents the client configuration
 type Config struct {
-	APIToken           string `mapstructure:"api_token"`
-	SolarwindsUser     string `mapstructure:"solarwinds_user"`
+	APIToken          string `mapstructure:"api_token"`
+	APIKey            string `mapstructure:"api_key"` // Added API Key field
+	SolarwindsUser    string `mapstructure:"solarwinds_user"`
 	SolarwindsPassword string `mapstructure:"solarwinds_passwd"`
-	SolarwindsOrgID    string `mapstructure:"solarwinds_org_id"`
+	SolarwindsOrgID   string `mapstructure:"solarwinds_org_id"`
 }
 
 type Clients struct {
@@ -28,6 +32,7 @@ func (c *Config) Client() (*Clients, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if user := os.Getenv("SOLARWINDS_USER"); user != "" {
 		if password := os.Getenv("SOLARWINDS_PASSWD"); password != "" {
 			c.SolarwindsUser = user
@@ -36,19 +41,21 @@ func (c *Config) Client() (*Clients, error) {
 			return nil, errors.New("user and password must be present together")
 		}
 	}
+
 	if orgID := os.Getenv("SOLARWINDS_ORG_ID"); orgID != "" {
 		c.SolarwindsOrgID = orgID
 	}
+
 	// solarwindsClient, err := solarwinds.NewClient(solarwinds.ClientConfig{
-	// 	Username: c.SolarwindsUser,
-	// 	Password: c.SolarwindsPassword,
+	// Username: c.SolarwindsUser,
+	// Password: c.SolarwindsPassword,
 	// })
 	// if err != nil {
-	// 	return nil, err
+	// return nil, err
 	// }
 	// err = solarwindsClient.Init()
 	// if err != nil {
-	// 	return nil, err
+	// return nil, err
 	// }
 
 	var pingdomClientExt *pingdomext.Client
@@ -58,7 +65,6 @@ func (c *Config) Client() (*Clients, error) {
 			Password: c.SolarwindsPassword,
 			OrgID:    c.SolarwindsOrgID,
 		})
-
 		if err != nil {
 			return nil, err
 		}
@@ -73,13 +79,27 @@ func (c *Config) Client() (*Clients, error) {
 
 // Client returns a new client for accessing pingdom.
 func (c *Config) pingdomClient() (*pingdom.Client, error) {
+	// Check for API token in environment variable
 	if v := os.Getenv("PINGDOM_API_TOKEN"); v != "" {
 		c.APIToken = v
 	}
-
-	client, _ := pingdom.NewClientWithConfig(pingdom.ClientConfig{APIToken: c.APIToken})
-
+	
+	// Check for API key in environment variable
+	if v := os.Getenv("PINGDOM_API_KEY"); v != "" {
+		c.APIKey = v
+	}
+	
+	// Create client configuration with both authentication options
+	clientConfig := pingdom.ClientConfig{
+		APIToken: c.APIToken,
+		APIKey:   c.APIKey,
+	}
+	
+	client, err := pingdom.NewClientWithConfig(clientConfig)
+	if err != nil {
+		return nil, err
+	}
+	
 	log.Printf("[INFO] Pingdom Client configured.")
-
 	return client, nil
 }
