@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/mbarper/terraform-provider-pingdom/pingdom"
+	// "github.com/mbarper/terraform-provider-pingdom/pingdom"
+	"github.com/Samuel-Ijegbulem/terraform-provider-pingdom/pingdom"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 )
 

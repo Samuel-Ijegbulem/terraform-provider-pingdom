@@ -3,12 +3,13 @@ module github.com/Samuel-Ijegbulem/terraform-provider-pingdom
 go 1.19
 
 require (
+    // github.com/mbarper/go-pingdom v1.4.3
     github.com/Samuel-Ijegbulem/go-pingdom v1.4.3
     github.com/hashicorp/terraform-plugin-sdk/v2 v2.24.1
     github.com/mitchellh/mapstructure v1.5.0
 )
 
-<!-- // For local development, uncomment this replace directive -->
+// For local development, uncomment this replace directive
 replace github.com/Samuel-Ijegbulem/go-pingdom => ../go-pingdom
 
 require (
