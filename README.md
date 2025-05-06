@@ -37,7 +37,7 @@ provider "pingdom" {
 }
 
 provider "pingdom" {
-    api_key           = "${var.pingdom_api_key}"  # API Key authentication
+    api_key           = "${var.pingdom_api_key}"
 }
 ```
 The provider supports two authentication methods:
